@@ -50,22 +50,26 @@ Most plots have several of the following:
 
 ## Examples
 
-* *pretty_3d* 3-D feature plot with shadows\\
+* *pretty_3d* 3-D feature plot with shadows
+ 
 Three features (_v1_, _v2_, _v3_) and their associated labels (_labelsin_ -- used for color and legend) as plotted in 3-D. _shadows_ drops a line to the plane where _shadows_ = 0 (i.e.: shadows='z' drops a line from the point to the XY-plane). _ellipses_ shows the standard deviation in the XY-plane on the XY-plane; without much work, this could be changed from ellipses to 2-D crosshairs or whiskers.
 
 ![alt tag](https://raw.githubusercontent.com/acsutt0n/PlottingSuite-python-/master/\/subtrees_3d_scatter.png)
 
-* *pretty_2d* 2-D feature plot\\
+* *pretty_2d* 2-D feature plot
+ 
 Similar to 3-D but ellipses now show all relevant information (no z-dimension to ignore).
 
 ![alt tag](https://raw.githubusercontent.com/acsutt0n/PlottingSuite-python-/master/paths_2d_scatter.png)
 
-* *violin_spline* Modified boxplot\\
+* *violin_spline* Modified boxplot
+ 
 This is obviously based on the beautiful Seaborn package that everyone should be using (https://stanford.edu/~mwaskom/software/seaborn/). A main difference (as of this writing, 4/2016) is that the IQR is differentiated by another hue of the same color. _stepfilled_ (bool) shows the underlying histogram used to generate the data.
 
 ![alt tag](https://raw.githubusercontent.com/acsutt0n/PlottingSuite-python-/master/violin_example.png)
 
-* *hori_scatter* Horizontal scatter plot\\
+* *hori_scatter* Horizontal scatter plot
+
 This allows for a _bench_ to be set (see above), and can indicate the IQR with simple lines. Simple is good.
 
 ![alt tag](https://raw.githubusercontent.com/acsutt0n/PlottingSuite-python-/master/scatter_bench_crosshairs.png)
