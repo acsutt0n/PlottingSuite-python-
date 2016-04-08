@@ -3,8 +3,10 @@
 
 * Dependencies: scipy, numpy, seaborn, matplotlib, pandas, json, statsmodels
 
+This is a simple plotting package made to facilitate the easy creation of beautiful images. Similar examples can be found in seaborn, Matplotlib cookbooks, and pandas, but these were made with my specific data in mind. There are examples below; many more can be found in my publications. In general, they are simple enough for a basic Python user to manipulate. Feel free to message me with questions or suggestions.
+
 ## Format of input
-The majority of these functions take a list of lists (LOL) as the input. Most functions want an LOL and its associated labels, which could easily be taken from a dictionary or pandas DataFrame.
+The majority of these functions take a list of lists (LOL, or matrix) as the input. Most functions want an LOL and its associated labels, which could easily be taken from a dictionary or pandas DataFrame.
 
 Here's an example input:
 
