@@ -785,18 +785,18 @@ def violin_box(xdata, labelsin, title=None, axes=None, norm=False,
 def violin_spline(xdata, labelsin, title=None, axes=None, norm=False,
                 showmean=True, stepfilled=True, llog=False, rrange=None,
                 forcebins=100, shade=True, eps=False, xcnt=True):
-  """xcnt is the max of the y axis (on bottom)
+  """xcnt is the max of the y axis (on bottom) ver1.1
   """
   from scipy.ndimage.filters import gaussian_filter1d as filt
   colors = ['darkkhaki', 'royalblue', 'forestgreen','tomato', 'darkorchid']
   altcolors = ['palegoldenrod', 'lightskyblue', 'lightgreen', 'lightpink', 'plum']
   L = list(np.unique(labelsin))
   C = [L.index(i) for i in labelsin]
-  #print(L,C)
   fig = plt.figure(dpi=200) # Give it pub-quality DPI
   plots = [fig.add_subplot(1,len(xdata),i+1) for i in range(len(xdata))]
-  if norm is True:
-    #tdata = np.linspace(0,100,len(xdata[0]))
+  try: xdata = [x.dropna().values for x in xdata] # In case it's a data frame
+  except: pass
+  if norm is True: 
     X = []
     for x in xdata:
       X.append([i/max(x) for i in x])
@@ -835,7 +835,7 @@ def violin_spline(xdata, labelsin, title=None, axes=None, norm=False,
     fit = filt(hist, 1.5)
     q1_inds = [[plotbins[u], fit[u]] for u in range(len(fit)) if plotbins[u] < q25+hgt]
     q4_inds = [[plotbins[u], fit[u]] for u in range(len(fit)) if plotbins[u] > q75-hgt]
-    iqr_inds = [[plotbins[u], fit[u]] for u in range(len(fit)) if q25 < plotbins[u] < q75]
+    iqr_inds = [[plotbins[u], fit[u]] for u in range(len(fit)) if q25 <= plotbins[u] < q75]
     plots[p].fill_betweenx([q[0] for q in q1_inds],[q[1]/max(fit) for q in q1_inds], 
                           [-q[1]/max(fit) for q in q1_inds], color=altcolors[C[p]], alpha=0.9)
     plots[p].fill_betweenx([q[0] for q in q4_inds],[q[1]/max(fit) for q in q4_inds], 
