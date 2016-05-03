@@ -296,7 +296,7 @@ def simple_scatter(x, y, fit=False, title=None, axes=None, showtext=True):
   if type(x[0]) is list: # Multiple plots
     fcolors = ['darkkhaki', 'royalblue', 'forestgreen','deeppink']
     if len(x) > 4:
-      print('Can only handle 4 plots!')
+      print('Can only handle 4 data groups, got %i' %len(x))
   else:
     x, y = [x], [y]
     fcolors = ['steelblue']
@@ -558,6 +558,62 @@ def pretty_bar(v, labelsin, stderr=None, ticks=None, title=None, axes=None,
 
 
 
+def pretty_stackedbar(V, labelsin, title=None, colors=None,
+                      axes=None, showxticks=True, counts=True, ):
+  """
+  Stacked bar plots. Groups are labeled (x-tick) and binned items are
+  colored. Colors can be supplied by user; must be >= len(kkeys) (one
+  unique color per unique item, NOT per group).
+  _counts_ determines whether percentages have already been computed,
+  if False, elements of _V_ should be dicts (keys are groups).
+  """
+  # Colors - must be different, can be supplied by user
+  if colors is None:
+    colors = ['darkorchid', 'orchid', 'violet', 'pink', 'deeppink']
+  # Most abundant is on bottom, and so on
+  if counts:
+    print('Computing counts....')
+    plotgroups = [{i: float(V[k].count(i))/len(V[k]) for i in list(set(V[k]))} 
+                  for k in range(len(V))]
+  else:
+    print('Using supplied values...')
+    plotgroups = V
+  # Fill in the dicts
+  kkeys = []
+  for gr in plotgroups:
+    for k in gr.keys():
+      if k not in kkeys:
+        kkeys.append(k)
+  for u in range(len(plotgroups)):
+    for k in kkeys:
+      if k not in plotgroups[u].keys():
+        plotgroups[u][k] = 0. # Just make it a zero
+  bottoms = [0. for i in plotgroups]
+  # Plotting
+  plt.figure()
+  pbars = []
+  for k in kkeys:
+    pbars.append(plt.bar(np.arange(len(V)), 
+                         [plotgroups[i][k] for i in range(len(V))],
+                         width=.5, color=colors[k],
+                         edgecolor='white',
+                         bottom=bottoms))
+    bottoms = [bottoms[b]+plotgroups[b][k] for b in range(len(bottoms))]
+  # Plot aesthetics
+  if axes is not None:
+    plt.xlabel(axes[0])
+    plt.ylabel(axes[1])
+  if title is not None:
+    plt.title(title)
+  if showxticks:
+    plt.xticks(np.arange(len(V))+0.25, labelsin)
+  plt.xlim([-.5, len(V)])
+  plt.legend(pbars, kkeys)
+  plt.show()
+  return
+
+
+
 def plot_cum_dist(V, labelsin, title=None):
   """
   Plot lines showing cumulative distribution, i.e. for Sholl.
@@ -785,18 +841,18 @@ def violin_box(xdata, labelsin, title=None, axes=None, norm=False,
 def violin_spline(xdata, labelsin, title=None, axes=None, norm=False,
                 showmean=True, stepfilled=True, llog=False, rrange=None,
                 forcebins=100, shade=True, eps=False, xcnt=True):
-  """xcnt is the max of the y axis (on bottom) ver1.1
+  """xcnt is the max of the y axis (on bottom)
   """
   from scipy.ndimage.filters import gaussian_filter1d as filt
   colors = ['darkkhaki', 'royalblue', 'forestgreen','tomato', 'darkorchid']
   altcolors = ['palegoldenrod', 'lightskyblue', 'lightgreen', 'lightpink', 'plum']
   L = list(np.unique(labelsin))
   C = [L.index(i) for i in labelsin]
+  #print(L,C)
   fig = plt.figure(dpi=200) # Give it pub-quality DPI
   plots = [fig.add_subplot(1,len(xdata),i+1) for i in range(len(xdata))]
-  try: xdata = [x.dropna().values for x in xdata] # In case it's a data frame
-  except: pass
-  if norm is True: 
+  if norm is True:
+    #tdata = np.linspace(0,100,len(xdata[0]))
     X = []
     for x in xdata:
       X.append([i/max(x) for i in x])
@@ -821,7 +877,7 @@ def violin_spline(xdata, labelsin, title=None, axes=None, norm=False,
     hist, _ = np.histogram(xdata[p], bins=b_e)
     occupied = len([i for i in hist if i != 0])
     if type(forcebins) is int and occupied < forcebins/2.: # Sparse bins
-      hist, b_e = np.histogram(xdata[p], bins=occupied*2)
+      hist, b_e = np.histogram(xdata[p], bins=int(occupied*2))
     plotbins = [(b_e[i]+b_e[i+1])/2. for i in range(len(b_e)-1)]
     # find the appropriate bar width #print(minm, maxm, p);
     hgt = (maxm-minm)/occupied # as high as there are filled hist elements
@@ -835,7 +891,7 @@ def violin_spline(xdata, labelsin, title=None, axes=None, norm=False,
     fit = filt(hist, 1.5)
     q1_inds = [[plotbins[u], fit[u]] for u in range(len(fit)) if plotbins[u] < q25+hgt]
     q4_inds = [[plotbins[u], fit[u]] for u in range(len(fit)) if plotbins[u] > q75-hgt]
-    iqr_inds = [[plotbins[u], fit[u]] for u in range(len(fit)) if q25 <= plotbins[u] < q75]
+    iqr_inds = [[plotbins[u], fit[u]] for u in range(len(fit)) if q25 < plotbins[u] < q75]
     plots[p].fill_betweenx([q[0] for q in q1_inds],[q[1]/max(fit) for q in q1_inds], 
                           [-q[1]/max(fit) for q in q1_inds], color=altcolors[C[p]], alpha=0.9)
     plots[p].fill_betweenx([q[0] for q in q4_inds],[q[1]/max(fit) for q in q4_inds], 
@@ -872,11 +928,13 @@ def violin_spline(xdata, labelsin, title=None, axes=None, norm=False,
         plots[p].set_yscale('log') ## Log scale
       plots[p].set_ylim([minm,maxm])
       for pos in ['top', 'left', 'right']:
-        plots[p].spines[pos].set_visible(False)
-    plt.locator_params(nbins=4) #################### Set one x-tick
-    plots[p].set_xticks([.5])
-    plots[p].set_xticklabels(['%i' %int(max(hist))])
-    # plots[p].set_xlim([0,1.])
+        plots[p].spines[pos].set_visible(False)    
+    plt.locator_params(nbins=4) 
+    plots[p].set_xticks([.0])
+    if xcnt: #################### Set one x-tick
+      plots[p].set_xticklabels(['%i' %int(max(hist))])
+    else:
+      plots[p].set_xticklabels([''])
   if title:
     plt.suptitle(title, fontsize=20)
   plt.show()
