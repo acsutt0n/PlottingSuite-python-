@@ -52,6 +52,8 @@ Most plots have several of the following:
 
 ## Examples
 
+There are many many different kinds of plots in *pretty_plot* and *DF_plots*; here are few examples and when you might use them.
+
 * *pretty_3d* 3-D feature plot with shadows
  
 Three features (_v1_, _v2_, _v3_) and their associated labels (_labelsin_ -- used for color and legend) as plotted in 3-D. _shadows_ drops a line to the plane where _shadows_ = 0 (i.e.: shadows='z' drops a line from the point to the XY-plane). _ellipses_ shows the standard deviation in the XY-plane on the XY-plane; without much work, this could be changed from ellipses to 2-D crosshairs or whiskers.
@@ -75,3 +77,20 @@ This is obviously based on the beautiful Seaborn package that everyone should be
 This allows for a _bench_ to be set (see above), and can indicate the IQR with simple lines. Simple is good.
 
 ![alt tag](https://raw.githubusercontent.com/acsutt0n/PlottingSuite-python-/master/scatter_bench_crosshairs.png)
+
+* *hist_2d* 2-D scatter with histograms for each dimension
+
+Inspired by a pandas visualization page (https://www.kaggle.com/benhamner/d/uciml/iris/python-data-visualizations), this scatterplots data and shows histograms for each of the dimensions. The histograms can be stacked to show the composition of each bin (by group label) or the overall color can be 'tinted' based on the composition.
+
+![alt tag](https://raw.githubusercontent.com/acsutt0n/PlottingSuite-python-/master/2d-hist.png)
+
+* *cohort* Cohort analysis
+
+Cohort analysis (explained very well here: http://www.behind-the-enemy-lines.com/2016/02/a-cohort-analysis-of-mechanical-turk.html) is a great way to visualize churn -- how many users (or samples/preparations) hang around, and for how long, after joining. 
+
+![alt tag](https://raw.githubusercontent.com/acsutt0n/PlottingSuite-python-/master/cohort_analysis.png)
+
+
+## gl hf
+
+Somewhat maintained by Alex Sutton.

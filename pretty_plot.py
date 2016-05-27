@@ -672,6 +672,8 @@ def hist_2d(x, y, labelsin=None, axes=None, showstats=False,
     plt.plot(x[p], y[p], color=cols[p], marker='o', markeredgecolor='none',
              alpha=0.9, ) # markersize=2
   Xrange, Yrange = plt.xlim(), plt.ylim()
+  if axes is not None:
+    plt.xlabel(axes[0], fontsize=15); plt.ylabel(axes[1], fontsize=15)
   # Stats
   if showstats:
     from scipy.stats import spearmanr as spear
